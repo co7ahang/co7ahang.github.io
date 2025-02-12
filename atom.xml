@@ -193,30 +193,6 @@
   </entry>
   
   <entry>
-    <title>倍增 LCA 笔记</title>
-    <link href="http://blog.tsumugi.icu/2025/01/05/lca-review-note/"/>
-    <id>http://blog.tsumugi.icu/2025/01/05/lca-review-note/</id>
-    <published>2025-01-05T08:46:50.000Z</published>
-    <updated>2025-01-10T11:39:18.077Z</updated>
-    
-    <content type="html"><![CDATA[<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> fa[N],st[N][<span class="number">20</span>],dep[N];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> u,<span class="type">int</span> f,<span class="type">int</span> d)</span></span>&#123;</span><br><span class="line">    fa[u]=f;dep[u]=d;st[u][<span class="number">0</span>]=f;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">19</span>;i++)&#123;</span><br><span class="line">        st[u][i]=st[st[u][i<span class="number">-1</span>]][i<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> v:G[u])&#123;</span><br><span class="line">        <span class="keyword">if</span>(v==f||v==u) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">dfs</span>(v,u,d<span class="number">+1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上为 <code>dfs</code> 函数。<strong><code>dfs</code> 函数的意义是预处理每个点 $N$ 向上跳跃 $2^i (0 \leq i \leq 19)$ 个节点的结果</strong>。</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">lca</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(dep[x]&lt;dep[y]) <span class="built_in">swap</span>(x,y);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> k=<span class="number">19</span>;k&gt;=<span class="number">0</span>;k--)&#123;</span><br><span class="line">        <span class="keyword">if</span>(dep[ st[x][k] ]&gt;=dep[y]) x=st[x][k];</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">if</span>(x==y) <span class="keyword">return</span> x; </span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> k=<span class="number">19</span>;k&gt;=<span class="number">0</span>;k--)&#123;</span><br><span class="line">        <span class="keyword">if</span>(st[x][k]!=st[y][k]) x=st[x][k],y=st[y][k]; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> st[x][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上为 <code>lca</code> 函数。<strong><code>lca</code> 函数的处理分为 2 步：</strong></p><ol><li><p>保证 $dep_x \leq dep_y$ ，并向上跳跃直至 $dep_x = dep_y$ 。不妨令 $x$ 低于 $y$ ，即 $x$ 需要向上跳到与 $y$ 高度相同的节点，即若 $dep_{node(x,2^k)} \geq dep_y$ 则跳跃。当处理完毕后若 $x$ 与 $y$ 为同一节点，则返回 $x$ 。</p></li><li><p>向上寻找，迫近 $LCA(x ,y)$ 的直接儿子节点。若 $node(x,2^k)$ 与 $node(y,2^k)$ 不同，就说明 $x$ 与 $y$ 还在 $LCA(x ,y)$ 以下，则跳跃。最终返回 $node(x,2^0)$ 或 $node(y,2^0)$ ，事实上这两个点就是同一个节点。</p></li></ol><hr><p>今天是 CSP-J2/S2 的前夕。写下这篇笔记的原因是确保明天我还看得懂我写的是什么。</p><p>2024/10/25，@<a href="https://www.luogu.com.cn/user/831011">co7ahang</a> 于 SSDF 三机房。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;</summary>
-      
-    
-    
-    
-    <category term="算法" scheme="http://blog.tsumugi.icu/categories/%E7%AE%97%E6%B3%95/"/>
-    
-    
-    <category term="LCA" scheme="http://blog.tsumugi.icu/tags/LCA/"/>
-    
-  </entry>
-  
-  <entry>
     <title>随笔之月</title>
     <link href="http://blog.tsumugi.icu/2025/01/05/essay-tsuki/"/>
     <id>http://blog.tsumugi.icu/2025/01/05/essay-tsuki/</id>
@@ -242,34 +218,26 @@
   </entry>
   
   <entry>
-    <title>题解 P11506</title>
-    <link href="http://blog.tsumugi.icu/2025/01/05/solution-p11506/"/>
-    <id>http://blog.tsumugi.icu/2025/01/05/solution-p11506/</id>
-    <published>2025-01-05T08:45:05.000Z</published>
-    <updated>2025-01-26T13:49:28.814Z</updated>
+    <title>倍增 LCA 笔记</title>
+    <link href="http://blog.tsumugi.icu/2025/01/05/lca-review-note/"/>
+    <id>http://blog.tsumugi.icu/2025/01/05/lca-review-note/</id>
+    <published>2025-01-05T08:46:50.000Z</published>
+    <updated>2025-01-10T11:39:18.077Z</updated>
     
-    <content type="html"><![CDATA[<p>题目：<a href="https://www.luogu.com.cn/problem/P11506">[ROIR 2017 Day 1] 校园</a></p><h3 id="题意">题意</h3><p>一个表格有 $n$ 行，无限多列，在每一列中要求行数为 $k$ 的倍数的格子里有 $x$ 个数，其他各自中有 $y$ 个数，格子中的数按照自然数顺序排序。共 $q$ 次询问，求给出的数 $a_1, a_2, \dots, a_q$ 在表格中的行数。</p><p>下图是一种 $n = 7$, $k = 3$, $x = 2$, $y = 3$ 的情况，同题面样例：</p><p><img src="https://cdn.luogu.com.cn/upload/image_hosting/vre6suig.png" alt=""></p><h3 id="思路">思路</h3><p>如果对于每一次询问，直接按照题意模拟填数的话，时间复杂度为 $\text{O} (qn)$ ，显然只能通过 subtask #1 。</p><p>考虑优化，规定每填 $k - 1$ 次 $y$ 和 $1$ 次 $x$ 为一个周期。</p><p>我们可以预处理出<strong>每一列填入数字的数量</strong>和<strong>一个完整周期内填入数字的数量</strong> $S_T$ 和 $S_k$  ，如果 $a_i &gt; S_T$ ， 那么 $a_i$ 所在的行数与 ${a_i}^{\prime} = a_i \bmod S_T $ (${a_i}^{\prime} &lt; S_T$) 所在的行数相同，可以缩小一定范围的常数。</p><p>接下来对于每次询问 ${a_i}^{\prime}$ ，我们可以计算出其经历了几个完整的周期，以及周期之外最后剩余的行数。这些都可以通过数学方法直接处理，时间复杂度 $\text{O} (q)$ 。</p><ul><li><p>在周期之内，计算经历了几个完整的周期，直接用 ${a_i}^{\prime}$ 整除 $S_k$ 即可。这一部分答案为周期数乘以周期 $k$ 。</p></li><li><p>在周期以外，因为每个周期前 $k-1$ 格均为 $y$ 情况，最后 $1$ 格为 $x$ 情况，我们先判断其是否在周期的最后 $1$ 行，如果是，这一部分答案即为周期 $k$ 。反之则前面每一格内数量均为 $y$ ，使用周期外数字的数量除以 $y$ ，判断一下是否整除即可。</p></li></ul><p>以样例为例， $S_T = 8$，$S_k = 19$ ，若询问 $a_1 = 50$ ，那么 ${a_1}^{\prime} = a_1 \bmod n = 12$ ， ${a_1}^{\prime}$ 经历了 $1$ 个完整的周期，最终剩余 $2$ 行，所以最终答案为 $3 + 2 = 5$ 。</p><p>核心判断语句如下：</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ll <span class="title">query</span><span class="params">(ll a)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(a==<span class="number">0</span>) <span class="keyword">return</span> n;</span><br><span class="line">    ll block=a/Sk,tmp=block*Sk;<span class="comment">// block 代表经历了几个完整周期， tmp 代表前面的周期有多少个数</span></span><br><span class="line">    <span class="comment">//printf(&quot;%lld block:%lld tmp:%lld\n&quot;,a,block,tmp);</span></span><br><span class="line">    a-=tmp;</span><br><span class="line">    <span class="keyword">if</span>(a&lt;=(k<span class="number">-1</span>)*y)&#123;<span class="comment">//全 y</span></span><br><span class="line">        <span class="keyword">if</span>(a%y) <span class="keyword">return</span> block*k+a/y<span class="number">+1</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> block*k+a/y;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">//含有 x &amp; y</span></span><br><span class="line">        <span class="keyword">return</span> block*k+k;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="代码">代码</h3><p>评测记录：<a href="https://www.luogu.com.cn/record/197131297">https://www.luogu.com.cn/record/197131297</a></p><p>代码(C++)：<a href="https://www.luogu.com/paste/0ulbm2nd">https://www.luogu.com/paste/0ulbm2nd</a></p><h3 id="闲话">闲话</h3><p>很好的签到题，注意 $a_i \leq 10^{18}$ 要开 long long 。</p>]]></content>
+    <content type="html"><![CDATA[<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> fa[N],st[N][<span class="number">20</span>],dep[N];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> u,<span class="type">int</span> f,<span class="type">int</span> d)</span></span>&#123;</span><br><span class="line">    fa[u]=f;dep[u]=d;st[u][<span class="number">0</span>]=f;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">19</span>;i++)&#123;</span><br><span class="line">        st[u][i]=st[st[u][i<span class="number">-1</span>]][i<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> v:G[u])&#123;</span><br><span class="line">        <span class="keyword">if</span>(v==f||v==u) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">dfs</span>(v,u,d<span class="number">+1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上为 <code>dfs</code> 函数。<strong><code>dfs</code> 函数的意义是预处理每个点 $N$ 向上跳跃 $2^i (0 \leq i \leq 19)$ 个节点的结果</strong>。</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">lca</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(dep[x]&lt;dep[y]) <span class="built_in">swap</span>(x,y);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> k=<span class="number">19</span>;k&gt;=<span class="number">0</span>;k--)&#123;</span><br><span class="line">        <span class="keyword">if</span>(dep[ st[x][k] ]&gt;=dep[y]) x=st[x][k];</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">if</span>(x==y) <span class="keyword">return</span> x; </span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> k=<span class="number">19</span>;k&gt;=<span class="number">0</span>;k--)&#123;</span><br><span class="line">        <span class="keyword">if</span>(st[x][k]!=st[y][k]) x=st[x][k],y=st[y][k]; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> st[x][<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上为 <code>lca</code> 函数。<strong><code>lca</code> 函数的处理分为 2 步：</strong></p><ol><li><p>保证 $dep_x \leq dep_y$ ，并向上跳跃直至 $dep_x = dep_y$ 。不妨令 $x$ 低于 $y$ ，即 $x$ 需要向上跳到与 $y$ 高度相同的节点，即若 $dep_{node(x,2^k)} \geq dep_y$ 则跳跃。当处理完毕后若 $x$ 与 $y$ 为同一节点，则返回 $x$ 。</p></li><li><p>向上寻找，迫近 $LCA(x ,y)$ 的直接儿子节点。若 $node(x,2^k)$ 与 $node(y,2^k)$ 不同，就说明 $x$ 与 $y$ 还在 $LCA(x ,y)$ 以下，则跳跃。最终返回 $node(x,2^0)$ 或 $node(y,2^0)$ ，事实上这两个点就是同一个节点。</p></li></ol><hr><p>今天是 CSP-J2/S2 的前夕。写下这篇笔记的原因是确保明天我还看得懂我写的是什么。</p><p>2024/10/25，@<a href="https://www.luogu.com.cn/user/831011">co7ahang</a> 于 SSDF 三机房。</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;题目：&lt;a href=&quot;https://www.luogu.com.cn/problem/P11506&quot;&gt;[ROIR 2017 Day 1] 校园&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&quot;题意&quot;&gt;题意&lt;/h3&gt;
-&lt;p&gt;一个表格有 $n$ 行，无限多列，在每一列中要求行数为 $k$ </summary>
+    <summary type="html">&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;</summary>
       
     
     
     
-    <category term="题解" scheme="http://blog.tsumugi.icu/categories/%E9%A2%98%E8%A7%A3/"/>
+    <category term="算法" scheme="http://blog.tsumugi.icu/categories/%E7%AE%97%E6%B3%95/"/>
     
     
-    <category term="洛谷" scheme="http://blog.tsumugi.icu/tags/%E6%B4%9B%E8%B0%B7/"/>
-    
-    <category term="算法" scheme="http://blog.tsumugi.icu/tags/%E7%AE%97%E6%B3%95/"/>
-    
-    <category term="模拟" scheme="http://blog.tsumugi.icu/tags/%E6%A8%A1%E6%8B%9F/"/>
-    
-    <category term="ROIR" scheme="http://blog.tsumugi.icu/tags/ROIR/"/>
+    <category term="LCA" scheme="http://blog.tsumugi.icu/tags/LCA/"/>
     
   </entry>
   
@@ -288,6 +256,38 @@
     <summary type="html">&lt;p&gt;&lt;strong&gt;题目：&lt;a href=&quot;https://www.luogu.com.cn/problem/P11496&quot;&gt;P11496 [ROIR 2019 Day 1] 完全平方&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&quot;题意&quot;&gt;题意&lt;/h3&gt;
 &lt;p&gt;给出一个整数</summary>
+      
+    
+    
+    
+    <category term="题解" scheme="http://blog.tsumugi.icu/categories/%E9%A2%98%E8%A7%A3/"/>
+    
+    
+    <category term="洛谷" scheme="http://blog.tsumugi.icu/tags/%E6%B4%9B%E8%B0%B7/"/>
+    
+    <category term="算法" scheme="http://blog.tsumugi.icu/tags/%E7%AE%97%E6%B3%95/"/>
+    
+    <category term="模拟" scheme="http://blog.tsumugi.icu/tags/%E6%A8%A1%E6%8B%9F/"/>
+    
+    <category term="ROIR" scheme="http://blog.tsumugi.icu/tags/ROIR/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>题解 P11506</title>
+    <link href="http://blog.tsumugi.icu/2025/01/05/solution-p11506/"/>
+    <id>http://blog.tsumugi.icu/2025/01/05/solution-p11506/</id>
+    <published>2025-01-05T08:45:05.000Z</published>
+    <updated>2025-01-26T13:49:28.814Z</updated>
+    
+    <content type="html"><![CDATA[<p>题目：<a href="https://www.luogu.com.cn/problem/P11506">[ROIR 2017 Day 1] 校园</a></p><h3 id="题意">题意</h3><p>一个表格有 $n$ 行，无限多列，在每一列中要求行数为 $k$ 的倍数的格子里有 $x$ 个数，其他各自中有 $y$ 个数，格子中的数按照自然数顺序排序。共 $q$ 次询问，求给出的数 $a_1, a_2, \dots, a_q$ 在表格中的行数。</p><p>下图是一种 $n = 7$, $k = 3$, $x = 2$, $y = 3$ 的情况，同题面样例：</p><p><img src="https://cdn.luogu.com.cn/upload/image_hosting/vre6suig.png" alt=""></p><h3 id="思路">思路</h3><p>如果对于每一次询问，直接按照题意模拟填数的话，时间复杂度为 $\text{O} (qn)$ ，显然只能通过 subtask #1 。</p><p>考虑优化，规定每填 $k - 1$ 次 $y$ 和 $1$ 次 $x$ 为一个周期。</p><p>我们可以预处理出<strong>每一列填入数字的数量</strong>和<strong>一个完整周期内填入数字的数量</strong> $S_T$ 和 $S_k$  ，如果 $a_i &gt; S_T$ ， 那么 $a_i$ 所在的行数与 ${a_i}^{\prime} = a_i \bmod S_T $ (${a_i}^{\prime} &lt; S_T$) 所在的行数相同，可以缩小一定范围的常数。</p><p>接下来对于每次询问 ${a_i}^{\prime}$ ，我们可以计算出其经历了几个完整的周期，以及周期之外最后剩余的行数。这些都可以通过数学方法直接处理，时间复杂度 $\text{O} (q)$ 。</p><ul><li><p>在周期之内，计算经历了几个完整的周期，直接用 ${a_i}^{\prime}$ 整除 $S_k$ 即可。这一部分答案为周期数乘以周期 $k$ 。</p></li><li><p>在周期以外，因为每个周期前 $k-1$ 格均为 $y$ 情况，最后 $1$ 格为 $x$ 情况，我们先判断其是否在周期的最后 $1$ 行，如果是，这一部分答案即为周期 $k$ 。反之则前面每一格内数量均为 $y$ ，使用周期外数字的数量除以 $y$ ，判断一下是否整除即可。</p></li></ul><p>以样例为例， $S_T = 8$，$S_k = 19$ ，若询问 $a_1 = 50$ ，那么 ${a_1}^{\prime} = a_1 \bmod n = 12$ ， ${a_1}^{\prime}$ 经历了 $1$ 个完整的周期，最终剩余 $2$ 行，所以最终答案为 $3 + 2 = 5$ 。</p><p>核心判断语句如下：</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ll <span class="title">query</span><span class="params">(ll a)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(a==<span class="number">0</span>) <span class="keyword">return</span> n;</span><br><span class="line">    ll block=a/Sk,tmp=block*Sk;<span class="comment">// block 代表经历了几个完整周期， tmp 代表前面的周期有多少个数</span></span><br><span class="line">    <span class="comment">//printf(&quot;%lld block:%lld tmp:%lld\n&quot;,a,block,tmp);</span></span><br><span class="line">    a-=tmp;</span><br><span class="line">    <span class="keyword">if</span>(a&lt;=(k<span class="number">-1</span>)*y)&#123;<span class="comment">//全 y</span></span><br><span class="line">        <span class="keyword">if</span>(a%y) <span class="keyword">return</span> block*k+a/y<span class="number">+1</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> block*k+a/y;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">//含有 x &amp; y</span></span><br><span class="line">        <span class="keyword">return</span> block*k+k;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="代码">代码</h3><p>评测记录：<a href="https://www.luogu.com.cn/record/197131297">https://www.luogu.com.cn/record/197131297</a></p><p>代码(C++)：<a href="https://www.luogu.com/paste/0ulbm2nd">https://www.luogu.com/paste/0ulbm2nd</a></p><h3 id="闲话">闲话</h3><p>很好的签到题，注意 $a_i \leq 10^{18}$ 要开 long long 。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;题目：&lt;a href=&quot;https://www.luogu.com.cn/problem/P11506&quot;&gt;[ROIR 2017 Day 1] 校园&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;题意&quot;&gt;题意&lt;/h3&gt;
+&lt;p&gt;一个表格有 $n$ 行，无限多列，在每一列中要求行数为 $k$ </summary>
       
     
     
