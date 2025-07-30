@@ -1,0 +1,342 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>题解 CF413D | House Tsumugi</title><meta name="author" content="co7ahang"><meta name="copyright" content="co7ahang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="机房同学借“理解题意”之名在模拟赛时打了很久的 2048。在此表示严厉谴责。 考虑怎么存储状态。进行模拟，每次入栈的元素可能为 $2$ 或 $4$。   如果入栈的元素为 $2$ 的话，可以证明（模拟）能够一直合并。   但如果入栈元素为 $4$ 的话且栈顶为 $2$，$2$ 和其以前的元素就再也无法继续合并了。但如果栈顶不为 $2$ 仍可以合并。   因此我们只需要储存最后一个可合并的单调递减序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="题解 CF413D">
+<meta property="og:url" content="http://blog.tsumugi.icu/2025/07/30/solution-CF413D/index.html">
+<meta property="og:site_name" content="House Tsumugi">
+<meta property="og:description" content="机房同学借“理解题意”之名在模拟赛时打了很久的 2048。在此表示严厉谴责。 考虑怎么存储状态。进行模拟，每次入栈的元素可能为 $2$ 或 $4$。   如果入栈的元素为 $2$ 的话，可以证明（模拟）能够一直合并。   但如果入栈元素为 $4$ 的话且栈顶为 $2$，$2$ 和其以前的元素就再也无法继续合并了。但如果栈顶不为 $2$ 仍可以合并。   因此我们只需要储存最后一个可合并的单调递减序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.tsumugi.icu/img/muraback.jpg">
+<meta property="article:published_time" content="2025-07-30T12:45:05.000Z">
+<meta property="article:modified_time" content="2025-07-30T12:51:31.016Z">
+<meta property="article:author" content="co7ahang">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="Codeforces">
+<meta property="article:tag" content="DP">
+<meta property="article:tag" content="状压DP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.tsumugi.icu/img/muraback.jpg"><link rel="shortcut icon" href="/img/logo.jpg"><link rel="canonical" href="http://blog.tsumugi.icu/2025/07/30/solution-CF413D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '题解 CF413D',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="House Tsumugi" type="application/atom+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/logo.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/random/"><i class="fa-fw fa fa-link"></i><span> 随机文章</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-commenting"></i><span> 留言板</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/muraback.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">House Tsumugi</span></a><a class="nav-page-title" href="/"><span class="site-name">题解 CF413D</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/random/"><i class="fa-fw fa fa-link"></i><span> 随机文章</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-commenting"></i><span> 留言板</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">题解 CF413D</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-30T12:45:05.000Z" title="发表于 2025-07-30 20:45:05">2025-07-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-30T12:51:31.016Z" title="更新于 2025-07-30 20:51:31">2025-07-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A2%98%E8%A7%A3/">题解</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">498</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>机房同学借“理解题意”之名在模拟赛时打了很久的 2048。在此表示严厉谴责。</p>
+<p>考虑怎么存储状态。进行模拟，每次入栈的元素可能为 $2$ 或 $4$。</p>
+<ul>
+<li>
+<p>如果入栈的元素为 $2$ 的话，可以证明（模拟）能够一直合并。</p>
+</li>
+<li>
+<p>但如果入栈元素为 $4$ 的话且栈顶为 $2$，$2$ 和其以前的元素就再也无法继续合并了。但如果栈顶不为 $2$ 仍可以合并。</p>
+</li>
+</ul>
+<p>因此我们只需要储存<strong>最后一个可合并的单调递减序列</strong>。来看两个实例如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">$128$</th>
+<th style="text-align:center">$32$</th>
+<th style="text-align:center">$8$</th>
+<th style="text-align:center">$4$</th>
+<th style="text-align:center">$2$</th>
+</tr>
+</thead>
+</table>
+<ul>
+<li>
+<p>此时如果入栈为 $2$，最终合并结果为 $\left { 128, 32, 16  \right } $。</p>
+</li>
+<li>
+<p>此时如果入栈为 $4$，最终合并结果为 $\left { 128, 32, 8, 4, 2, 4  \right } $，前面的部分已经不可合并，故只需存储 $\left { 4 \right } $。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">$128$</th>
+<th style="text-align:center">$32$</th>
+<th style="text-align:center">$16$</th>
+<th style="text-align:center">$8$</th>
+<th style="text-align:center">$4$</th>
+</tr>
+</thead>
+</table>
+<ul>
+<li>
+<p>此时如果入栈为 $2$，结果为 $\left { 128, 32, 16, 8, 4, 2  \right } $，依旧可以合并。</p>
+</li>
+<li>
+<p>此时如果入栈为 $4$，最终合并结果为 $\left { 128, 64  \right } $。</p>
+</li>
+</ul>
+<p>由于是单减序列，又注意到 $k \leq 11$，可以想到用状压来存储。定义 $dp[i][k]$ 表示第 $i$ 个元素时栈内状态为 $k$ 的方案数，初始化 $dp[0][0] = 1$。转移方程可以意会一下。</p>
+<p>Code</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">2e3</span> + <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> P = <span class="number">1e9</span> + <span class="number">7</span>;</span><br><span class="line"><span class="type">int</span> n, m, k;</span><br><span class="line"><span class="type">int</span> val[N];</span><br><span class="line"><span class="type">int</span> dp[N][(<span class="number">1</span> &lt;&lt; <span class="number">11</span>) + <span class="number">1</span>];</span><br><span class="line"><span class="function"><span class="type">int32_t</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	n = <span class="built_in">read</span>(), k = <span class="built_in">read</span>();</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) val[i] = <span class="built_in">read</span>();</span><br><span class="line">	dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt;= (<span class="number">1</span> &lt;&lt; k); j++) &#123;</span><br><span class="line">			<span class="type">int</span> ni = i + <span class="number">1</span>, nj;</span><br><span class="line">			<span class="keyword">if</span>(val[i] != <span class="number">4</span>) &#123;</span><br><span class="line">				<span class="comment">//2</span></span><br><span class="line">				nj = <span class="built_in">min</span>((<span class="type">int</span>)(<span class="number">1</span> &lt;&lt; k), j + <span class="number">2</span>);</span><br><span class="line">				dp[ni][nj] = (dp[i][j] + dp[ni][nj]) % P;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span>(val[i] != <span class="number">2</span>) &#123;</span><br><span class="line">				<span class="comment">//4</span></span><br><span class="line">				<span class="keyword">if</span>(j == (<span class="number">1</span> &lt;&lt; k)) nj = j;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span>(j &amp; <span class="number">2</span>) nj = <span class="number">4</span>;</span><br><span class="line">				<span class="keyword">else</span> nj = <span class="built_in">min</span>(j + <span class="number">4</span>, (<span class="type">int</span>)(<span class="number">1</span> &lt;&lt; k));</span><br><span class="line">				dp[ni][nj] = (dp[i][j] + dp[ni][nj]) % P;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">write</span>(dp[n][(<span class="number">1</span> &lt;&lt; k)]);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;<span class="comment">//i love mike qwq</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/413/submission/316087620">通过记录</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://blog.tsumugi.icu">co7ahang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://blog.tsumugi.icu/2025/07/30/solution-CF413D/">http://blog.tsumugi.icu/2025/07/30/solution-CF413D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://blog.tsumugi.icu" target="_blank">House Tsumugi</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a><a class="post-meta__tags" href="/tags/Codeforces/">Codeforces</a><a class="post-meta__tags" href="/tags/DP/">DP</a><a class="post-meta__tags" href="/tags/%E7%8A%B6%E5%8E%8BDP/">状压DP</a></div><div class="post-share"><div class="social-share" data-image="/img/muraback.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/07/30/solution-CF2096B/" title="题解 CF2096B"><img class="cover" src="/img/muraback.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">题解 CF2096B</div></div><div class="info-2"><div class="info-item-1">题意 给你 $n$ 种手套，第 $i$ 种手套有左手套 $l_i$ 只，右手套 $r_i$ 只。找到最小值 $x$ 使得选择任意 $x$ 只手套，总能保证有 $k$ 副不同的手套。 思路 数学题，贪心。 这道题需要使用抽屉原理（鸽巢原理，the pigeonhole principle）进行贪心。  把多于 $n$ 个的物体放到 $n$ 个抽屉里，则至少有一个抽屉里的东西不少于两件。 证明（反证法）：如果每个抽屉至多只能放进一个物体，那么物体的总数至多是 $n$，而不是题设的 $n + k \ (k \geq 1)$，故不可能。  如果每副手套左右各只有一只，答案为 $n + k$。此时的策略是先取每种手套的一只，然后取 $k$ 次另外一只。此时种类数为 $k$。 如果每副手套左右有若干只，考虑最差的情况，先取完每种手套的某一只手，再选取 $k$ 种手套取另外一只手。使用贪心法，先取每种手套较多的一只手，再降序排列取 $k - 1$ 种另一只手，最后再任意取 $1$ 只，此时种类数为 $k$。若 $(l_i, r_i)$ 按照 $\min(l_i, r_i)$...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/07/30/solution-CF2096B/" title="题解 CF2096B"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-30</div><div class="info-item-2">题解 CF2096B</div></div><div class="info-2"><div class="info-item-1">题意 给你 $n$ 种手套，第 $i$ 种手套有左手套 $l_i$ 只，右手套 $r_i$ 只。找到最小值 $x$ 使得选择任意 $x$ 只手套，总能保证有 $k$ 副不同的手套。 思路 数学题，贪心。 这道题需要使用抽屉原理（鸽巢原理，the pigeonhole principle）进行贪心。  把多于 $n$ 个的物体放到 $n$ 个抽屉里，则至少有一个抽屉里的东西不少于两件。 证明（反证法）：如果每个抽屉至多只能放进一个物体，那么物体的总数至多是 $n$，而不是题设的 $n + k \ (k \geq 1)$，故不可能。  如果每副手套左右各只有一只，答案为 $n + k$。此时的策略是先取每种手套的一只，然后取 $k$ 次另外一只。此时种类数为 $k$。 如果每副手套左右有若干只，考虑最差的情况，先取完每种手套的某一只手，再选取 $k$ 种手套取另外一只手。使用贪心法，先取每种手套较多的一只手，再降序排列取 $k - 1$ 种另一只手，最后再任意取 $1$ 只，此时种类数为 $k$。若 $(l_i, r_i)$ 按照 $\min(l_i, r_i)$...</div></div></div></a><a class="pagination-related" href="/2025/04/12/solution-CF755D/" title="题解 CF755D PolandBall and Polygon"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-12</div><div class="info-item-2">题解 CF755D PolandBall and Polygon</div></div><div class="info-2"><div class="info-item-1">题目：CF755D 洛谷 Codeforces 这是一道数据结构大水题。 打模拟赛的时候把这道题放到了 T4，做完 T1 就看这道题有思路就写出来了。 首先考虑如何暴力模拟计算答案，当每链接一条边 $(x, x + k)$ 时，被分割的区域数 $s$ 会增加 $u + 1$，其中 $u$ 是与这条边在正多边形中有交叉的线段数量。而题目保证边数（即点数）$n$ 与 $k$ 互质，说明在每一个点都被连接后才会回到初始节点，共链接 $n$ 条边。我们把每一次的连边存下来，在新的一次连边时判断有多少条边与此时的连边相交。暴力复杂度 $O(n^2)$，期望得分 $0$ 分。 考虑优化。时间复杂度的瓶颈是计算重复的边。想出了一个很奇怪的判断方法，用两颗树状数组储存每条边的左节点和右节点，由于 $k$ 是确认的，所以只用一个节点的位置就可以求出另一个节点。对于左节点与当前边 $(l, r)$ 相交时，统计左节点在区间 $[r - k + 1, r - 1]$ 的线段数量，右节点则统计 $[l + 1, l + k - 1]$。如果节点越界的话特判一下 $\pm n$...</div></div></div></a><a class="pagination-related" href="/2025/03/16/solution-p11838/" title="题解 P11838"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-16</div><div class="info-item-2">题解 P11838</div></div><div class="info-2"><div class="info-item-1">题目：P11838 [USACO25FEB] Printing Sequences B - 洛谷 赛场上很自然想到的是区间 DP。 定义 $dp[l][r]$ 为区间 $[l, r]$ 内最少使用 PRINT 语句的次数。考虑转移，在 $[l, r]$ 内枚举 $m$，若 $[l, r]$ 区间可以由 $[l, m]$ 循环得到，就把 $[l, m]$ 的答案转移给 $[l, r]$。如果不可以就把两个区间 $[l, m]$ 与 $[m+1,r]$ 答案相加。 转移方程如下： $$ dp[l][r]= \begin{cases} dp[l][m]+dp[m+1][r] &amp; \text{任意情况} \ dp[l][p] &amp; [l, r] \text{可由若干个} [l, p] \text{循环得到} \end{cases} $$ 常数不是很大，直接暴力循环判断是否满足即可。时间复杂度 $O(T \times n^4)$。 慢着，似乎哪里有问题？这个复杂度能过？ 对于任意情况的转移是 $O(T \times n^3)$。把视线放到暴力判断那一块，不难发现，在枚举...</div></div></div></a><a class="pagination-related" href="/2025/04/12/solution-CF466E/" title="题解 CF466E Information Graph"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-12</div><div class="info-item-2">题解 CF466E Information Graph</div></div><div class="info-2"><div class="info-item-1">题目：CF466E 洛谷链接 CF 链接 模拟赛把 T1 跳了来写这个（T3），离线思路很简单，比 T1 思维题好想。 首先，最终状态是若干颗上下级关系的树，所以我们可以将整个问题放在最后建好的树树上考虑。 对于操作一，将 $x$ 与 $y$ 连边即可。 对于操作二，可以用并查集优化复杂度快速找出当前的最高上司。 对于操作三，我们在每次操作二时把上下两个节点 $(u_p, u_d)$ 储存下来，判断节点 $x$ 是否在路径 $i$ 上可以使用最近公共祖先（LCA），若 $\text{LCA}(u_p, x) = u_p \land \text{LCA}(x, u_d) = x$，则 $x$ 在路径上，反之则不在。 需要注意的是，最终状态不一定是一棵树，可能有多棵树，在 LCA 初始化时要处理一下。 倍增写 LCA 的话时间复杂度为 $O(n \log...</div></div></div></a><a class="pagination-related" href="/2023/02/27/about-p1308/" title="【警示自己】关于一道橙题 P1308 的心路历程"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-27</div><div class="info-item-2">【警示自己】关于一道橙题 P1308 的心路历程</div></div><div class="info-2"><div class="info-item-1">这篇文章写于初学 OI 时，转载于 https://www.luogu.com.cn/article/99llrme4 。 有错也懒得改了，只是想存下来。  [NOIP2011 普及组] 统计单词数 题目描述 一般的文本编辑器都有查找单词的功能，该功能可以快速定位特定单词在文章中的位置，有的还能统计出特定单词在文章中出现的次数。 现在，请你编程实现这一功能，具体要求是：给定一个单词，请你输出它在给定的文章中出现的次数和第一次出现的位置。注意：匹配单词时，不区分大小写，但要求完全匹配，即给定单词必须与文章中的某一独立单词在不区分大小写的情况下完全相同（参见样例 1），如果给定单词仅是文章中某一单词的一部分则不算匹配（参见样例 2）。 输入格式 共 $2$ 行。 第 $1$ 行为一个字符串，其中只含字母，表示给定单词； 第 $2$ 行为一个字符串，其中只可能包含字母和空格，表示给定的文章。 输出格式 一行，如果在文章中找到给定单词则输出两个整数，两个整数之间用一个空格隔开，分别是单词在文章中出现的次数和第一次出现的位置（即在文章中第一次出现时，单词首字母在文章中的位置，位置从...</div></div></div></a><a class="pagination-related" href="/2025/01/05/solution-p11506/" title="题解 P11506"><img class="cover" src="/img/muraback.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-05</div><div class="info-item-2">题解 P11506</div></div><div class="info-2"><div class="info-item-1">题目：[ROIR 2017 Day 1] 校园 题意 一个表格有 $n$ 行，无限多列，在每一列中要求行数为 $k$ 的倍数的格子里有 $x$ 个数，其他各自中有 $y$ 个数，格子中的数按照自然数顺序排序。共 $q$ 次询问，求给出的数 $a_1, a_2, \dots, a_q$ 在表格中的行数。 下图是一种 $n = 7$, $k = 3$, $x = 2$, $y = 3$ 的情况，同题面样例：  思路 如果对于每一次询问，直接按照题意模拟填数的话，时间复杂度为 $\text{O} (qn)$ ，显然只能通过 subtask #1 。 考虑优化，规定每填 $k - 1$ 次 $y$ 和 $1$ 次 $x$ 为一个周期。 我们可以预处理出每一列填入数字的数量和一个完整周期内填入数字的数量 $S_T$ 和 $S_k$  ，如果 $a_i &gt; S_T$ ， 那么 $a_i$ 所在的行数与 ${a_i}^{\prime} = a_i \bmod S_T $ (${a_i}^{\prime} &lt; S_T$) 所在的行数相同，可以缩小一定范围的常数。 接下来对于每次询问...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/logo.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">co7ahang</div><div class="author-info-description">Tsumugi 的星球</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/co7ahang"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/co7ahang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:co7ahang@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content"><a href="https://blog.tsumugi.icu/">blog.tsumugi.icu</a> & <a target="_blank" rel="noopener" href="https://v.tsumugi.icu">v.tsumugi.icu</a> 欢迎光临 House Tsumugi ！这里是没钱买服务器的 Tsumugi ...</div></div><div class="xpand" style="height:200px;"><canvas class="illo" width="800" height="800" style="max-width: 200px; max-height: 200px; touch-action: none; width: 640px; height: 640px;"></canvas></div><script src="https://fastly.jsdelivr.net/gh/xiaopengand/blogCdn@latest/xzxr/twopeople1.js"></script><script src="https://fastly.jsdelivr.net/gh/xiaopengand/blogCdn@latest/xzxr/zdog.dist.js"></script><script id="rendered-js" src="https://fastly.jsdelivr.net/gh/xiaopengand/blogCdn@latest/xzxr/twopeople.js"></script><style>.card-widget.card-announcement {
+margin: 0;
+align-items: center;
+justify-content: center;
+text-align: center;
+}
+canvas {
+display: block;
+margin: 0 auto;
+cursor: move;
+}</style><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/07/30/solution-CF413D/" title="题解 CF413D"><img src="/img/muraback.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="题解 CF413D"/></a><div class="content"><a class="title" href="/2025/07/30/solution-CF413D/" title="题解 CF413D">题解 CF413D</a><time datetime="2025-07-30T12:45:05.000Z" title="发表于 2025-07-30 20:45:05">2025-07-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/30/solution-CF2096B/" title="题解 CF2096B"><img src="/img/muraback.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="题解 CF2096B"/></a><div class="content"><a class="title" href="/2025/07/30/solution-CF2096B/" title="题解 CF2096B">题解 CF2096B</a><time datetime="2025-07-30T12:45:05.000Z" title="发表于 2025-07-30 20:45:05">2025-07-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/04/12/solution-CF755D/" title="题解 CF755D PolandBall and Polygon"><img src="/img/muraback.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="题解 CF755D PolandBall and Polygon"/></a><div class="content"><a class="title" href="/2025/04/12/solution-CF755D/" title="题解 CF755D PolandBall and Polygon">题解 CF755D PolandBall and Polygon</a><time datetime="2025-04-12T11:35:05.000Z" title="发表于 2025-04-12 19:35:05">2025-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/04/12/solution-CF466E/" title="题解 CF466E Information Graph"><img src="/img/muraback.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="题解 CF466E Information Graph"/></a><div class="content"><a class="title" href="/2025/04/12/solution-CF466E/" title="题解 CF466E Information Graph">题解 CF466E Information Graph</a><time datetime="2025-04-12T11:35:05.000Z" title="发表于 2025-04-12 19:35:05">2025-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/16/solution-p11838/" title="题解 P11838"><img src="/img/muraback.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="题解 P11838"/></a><div class="content"><a class="title" href="/2025/03/16/solution-p11838/" title="题解 P11838">题解 P11838</a><time datetime="2025-03-16T03:45:05.000Z" title="发表于 2025-03-16 11:45:05">2025-03-16</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/muraback.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By co7ahang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://icp.gov.moe/?keyword=20255557" target="_blank">萌ICP备20255557号</a> <a href="https://ipw.cn/ssl/?site=blog.tsumugi.icu" title="本站支持SSL安全访问" target='_blank'><img style='display:inline-block;vertical-align:middle' alt="本站支持SSL安全访问" src="https://static.ipw.cn/icon/ssl-s1.svg"></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'co7ahang/giscus',
+      'data-repo-id': 'R_kgDONuijBA',
+      'data-category-id': 'DIC_kwDONuijBM4CmRp1',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/miku.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body></html>
